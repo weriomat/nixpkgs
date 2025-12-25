@@ -11,10 +11,14 @@ in
 {
   port = 9996;
   extraOpts.configFile = lib.mkOption {
-    type = lib.types.path;
-    default = "/etc/borgmatic/config.yaml";
+    type = lib.types.listOf lib.types.path;
+    default = [ "/etc/borgmatic/config.yaml" ];
+    example = [
+      "/etc/borgmatic/config.yaml"
+      "/etc/borgmatic.d/service1.yaml"
+    ];
     description = ''
-      The path to the borgmatic config file
+      The paths to the borgmatic config files
     '';
   };
 
@@ -26,7 +30,7 @@ in
       ExecStart = ''
         ${pkgs.prometheus-borgmatic-exporter}/bin/borgmatic-exporter run \
           --port ${toString cfg.port} \
-          --config ${toString cfg.configFile} \
+          --config ${lib.concatMapStringsSep ":" (f: toString f) cfg.configFile} \
           ${lib.concatMapStringsSep " " (f: lib.escapeShellArg f) cfg.extraFlags}
       '';
     };
