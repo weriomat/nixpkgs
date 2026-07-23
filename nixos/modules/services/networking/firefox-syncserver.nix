@@ -439,7 +439,7 @@ in
   };
 
   meta = {
-    maintainers = [ ];
+    maintainers = with lib.maintainers; [ weriomat ];
     doc = ./firefox-syncserver.md;
   };
 }
